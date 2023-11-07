@@ -8,9 +8,7 @@ import { RentsModule } from './rents/rents.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(
-      'mongodb+srv://renteasy:root123@renteasy.feecusp.mongodb.net/?retryWrites=true&w=majority',
-    ),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     AuthModule,
     UsersModule,
     RentsModule,
