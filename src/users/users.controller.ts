@@ -6,12 +6,14 @@ import {
   Param,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/user-create.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -29,6 +31,7 @@ export class UsersController {
     return this.userService.create(createUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({
@@ -40,39 +43,44 @@ export class UsersController {
     return this.userService.findAll();
   }
 
-  @Get(':email')
-  @ApiOperation({ summary: 'Get a user by email' })
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a user by id' })
   @ApiResponse({
     status: 200,
     description: 'The user has been successfully retrieved.',
   })
+  @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 404, description: 'User not found.' })
   async findOne(@Param('email') email: string): Promise<User> {
     return this.userService.findOne(email);
   }
 
-  @Put(':email')
-  @ApiOperation({ summary: 'Update a user by email' })
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  @ApiOperation({ summary: 'Update a user by id' })
   @ApiResponse({
     status: 200,
     description: 'The user has been successfully updated.',
   })
+  @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 404, description: 'User not found.' })
   async update(
-    @Param('email') email: string,
+    @Param('id') id: string,
     @Body() updateUserDto: CreateUserDto,
   ): Promise<User> {
-    return this.userService.update(email, updateUserDto);
+    return this.userService.update(id, updateUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':email')
-  @ApiOperation({ summary: 'Delete a user by email' })
+  @ApiOperation({ summary: 'Delete a user by id' })
   @ApiResponse({
     status: 200,
     description: 'The user has been successfully deleted.',
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  async delete(@Param('email') email: string): Promise<User> {
-    return this.userService.delete(email);
+  async delete(@Param('id') id: string): Promise<User> {
+    return this.userService.delete(id);
   }
 }
